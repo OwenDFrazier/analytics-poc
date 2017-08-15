@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Embroker - Analytics POC</title>
+
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+    <% if (dataLayer) { %>
+    <script>
+       dataLayer = [<%- dataLayer %>];
+    </script>
+    <% } %>
+
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','<%= googleTagManagerId %>');</script>
+    <!-- End Google Tag Manager -->
+</head>
+
+<body>
+    <div id="outer-container">
+        <form name="homeForm" action="./" method="post">
+            <br>
+            <input type="submit" value="HOME"/>
+        </form>
+        <br>
+
+        <label>STATUS: <%= status %></label>
+        <br>
+        <% if (loggedIn) { %>
+        <label>LOGGED IN AS: <%= userId %></label>
+        <% } %>
+        <br>
+        
+        <% if (!loggedIn) { %>
+        <form name="signupForm" action="./signup" method="post">
+            <br>
+            <label for="userId">User Id</label>
+            <input type="text" name="userId" value=""/><br>
+            <br>
+            <input type="submit" value="Sign Up"/>
+        </form>
+        <br>
+        <% } %>
+
+        <% if (!loggedIn) { %>
+        <form name="loginForm" action="./login" method="post">
+            <br>
+            <label for="userId">User Id</label>
+            <input type="text" name="userId" value=""/><br>
+            <br>
+            <input type="submit" value="Login"/>
+        </form>
+        <br>
+        <% } %>
+
+        <% if (loggedIn) { %>
+        <form name="logoutForm" action="./logout" method="post">
+            <br>
+            <input type="submit" value="Logout"/>
+        </form>
+        <br>
+        <% } %>
+
+        <div id="actions-container">Actions that don't require login
+            <button id="action-1-button">Action 1</button>
+            <button id="action-2-button">Action 2</button>
+        </div>     
+
+        <% if (loggedIn) { %>
+        <div id="logged-in-actions-container">Actions that require login
+            <button id="logged-in-action-1-button">Logged In Action 1</button>
+            <button id="logged-in-action-2-button">Logged In Action 2</button>
+        </div> 
+        <% } %>   
+
+        <br>
+        <form name="logoutForm" action="./db-init" method="post">
+            <br>
+            <input type="submit" value="Clear the Database"/>
+        </form>
+        <br>
+    </div>
+</body>
+
+</html>
