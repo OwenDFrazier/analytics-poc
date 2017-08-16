@@ -55,6 +55,11 @@
         <div id="logged-in-actions-container">Actions that require login
             <button id="logged-in-action-1-button">Logged In Action 1</button>
             <button id="logged-in-action-2-button">Logged In Action 2</button>
+            <form id="logged-in-form">
+                <label for="field1">Field1</label>
+                <input type="text" name="field1" id="logged-in-form-field1" value=""/>
+                <input type="submit" value="Capture Field1" id="logged-in-form-submit"/>
+            </form>
         </div> 
 
         <form id="db-init-form">
@@ -63,6 +68,11 @@
     </div>
 
     <script>
+
+    $("#logged-in-form").submit(function(e){
+        return false;
+    });
+
     function onAjaxResponse(response) {
         $('#status-label').text("STATUS: " + response.status);
         $('#logged-in-as-label').toggle(response.loggedIn);
