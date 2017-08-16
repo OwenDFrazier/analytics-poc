@@ -59,7 +59,7 @@ function login(request, response) {
 			if (err) {
 		        return _errorResponse(response, err);
 			}
-			response.cookie('session_token', tokenHash, { maxAge: 900000, httpOnly: true });
+			response.cookie(COOKIE_NAME, tokenHash, { maxAge: 900000, httpOnly: true });
 			return _ajaxResponse(response, "Logged In", {event: "login", userId: userId}, true);
 		});
 	});
