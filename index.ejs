@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Embroker - Analytics POC</title>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+
+    <script>
+       <% if (dataLayer) { %>
+       dataLayer = [<%- dataLayer %>];
+       <% } else { %>
+       dataLayer = [{"userId":null}];
+       <% } %>
+    </script>
+
+    <!-- Google Tag Manager -->
+   <!--  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','<%= googleTagManagerId %>');</script> -->
+    <!-- End Google Tag Manager -->
+</head>
+
+<body>
+    <div id="outer-container">
+
+        <label id="status-label">STATUS: <%= status %></label><br>
+        <label id="logged-in-as-label">LOGGED IN AS: <%= userId %></label>
+        
+        <form id="signup-form">
+            <label for="userId">User Id</label>
+            <input type="text" name="userId" value=""/>
+            <input type="submit" value="Sign Up"/>
+        </form>
+
+        <form id="login-form">
+            <label for="userId">User Id</label>
+            <input type="text" name="userId" value=""/>
+            <input type="submit" value="Login"/>
+        </form>
+
+        <form id="logout-form">
+            <input type="submit" value="Logout"/>
+        </form>
+
+        <div id="actions-container">Actions that don't require login
+            <button id="action-1-button">Action 1</button>
+            <button id="action-2-button">Action 2</button>
+        </div>     
+
+        <div id="logged-in-actions-container">Actions that require login
+            <button id="logged-in-action-1-button">Logged In Action 1</button>
+            <button id="logged-in-action-2-button">Logged In Action 2</button>
+        </div> 
+
+        <form id="db-init-form">
+            <input type="submit" value="Clear the Database"/>
+        </form>
+    </div>
+
+    <script>
+    function onAjaxResponse(response) {
+        $('#status-label').text("STATUS: " + response.status);
+        $('#logged-in-as-label').toggle(response.loggedIn);
+        $('#logged-in-as-label').text(response.loggedIn ? ('LOGGED IN AS: ' + response.userId) : '');
+        $('#signup-form').toggle(!response.loggedIn);
+        $('#login-form').toggle(!response.loggedIn);
+        $('#logout-form').toggle(response.loggedIn);
+        $('#logged-in-actions-container').toggle(response.loggedIn);
+
+        if (response.dataLayer) {
+            dataLayer.push(response.dataLayer);
+        }
+    }
+
+    function registerFormSubmit(formSelector, ajaxUrl) {
+        $(formSelector).submit(function(e){
+            e.preventDefault();
+            $.ajax({
+                url:ajaxUrl,
+                type:'get',
+                data:$(formSelector).serialize(),
+                success:function(response){
+                    if (response.dataLayer) {
+                        response.dataLayer = JSON.parse(response.dataLayer);
+                    }
+                    onAjaxResponse(response);
+                },
+                error:function(err) {
+                    onAjaxResponse({status: "Error: " + err});
+                }
+            });
+        });
+    }
+
+    registerFormSubmit('#signup-form', './signup');
+    registerFormSubmit('#login-form', './login');
+    registerFormSubmit('#logout-form', './logout');
+    registerFormSubmit('#db-init-form', './db-init');
+
+    var data = {status: "<%= status %>"};
+    <% if (loggedIn) { %>data.loggedIn = <%= loggedIn %>;<% } %>
+    <% if (userId) { %>data.userId = "<%= userId %>";<% } %>
+    <% if (dataLayer) { %>data.dataLayer = <%- dataLayer %>;<% } %>
+    onAjaxResponse(data);
+    </script>
+</body>
+
+</html>
